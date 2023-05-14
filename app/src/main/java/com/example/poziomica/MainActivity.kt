@@ -29,30 +29,38 @@ class MainActivity : AppCompatActivity() {
 
         // Definicja obiektu SensorEventListener
         sensorEventListener = object : SensorEventListener {
+            private var lastUpdate = System.currentTimeMillis()
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
                 // Nie jest to wymagane, ale można dodać logikę, która zostanie uruchomiona, gdy dokładność akcelerometru się zmieni
             }
 
             override fun onSensorChanged(event: SensorEvent?) {
                 if (event != null) {
-                    val x = event.values[0] // wartość akcelerometru wzdłuż osi x
-                    val y = event.values[1] // wartość akcelerometru wzdłuż osi y
-                    val z = event.values[2] // wartość akcelerometru wzdłuż osi z
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastUpdate > 1000) { // opóźnienie wynoszące 1 sekundę
+                        val x = event.values[0] // wartość akcelerometru wzdłuż osi x
+                        val y = event.values[1] // wartość akcelerometru wzdłuż osi y
+                        val z = event.values[2] // wartość akcelerometru wzdłuż osi z
 
-                    // dodaj logikę, która będzie wykonywana przy zmianie wartości akcelerometru
-                    textView.setText("x: $x, y: $y, z: $z") // ustawienie wartości w TextView
+                        // dodaj logikę, która będzie wykonywana przy zmianie wartości akcelerometru
+                        textView.setText("x: ${"%.3f".format(x)}, y: ${"%.3f".format(y)}, z: ${"%.3f".format(z)}") // ustawienie wartości w TextView z dokładnością do 3 miejsc po przecinku
+
+                        lastUpdate = currentTime // zapisanie czasu ostatniego pomiaru
+                    }
                 }
             }
         }
+
     }
 
     override fun onResume() {
         super.onResume()
-        sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_UI)
     }
 
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(sensorEventListener)
     }
+
 }
