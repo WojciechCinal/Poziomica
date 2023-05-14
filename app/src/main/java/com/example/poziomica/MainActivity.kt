@@ -30,6 +30,11 @@ class MainActivity : AppCompatActivity() {
         // Definicja obiektu SensorEventListener
         sensorEventListener = object : SensorEventListener {
             private var lastUpdate = System.currentTimeMillis()
+            private var xAcc = 0.0f
+            private var yAcc = 0.0f
+            private var zAcc = 0.0f
+            private val alpha = 0.8f
+
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
                 // Nie jest to wymagane, ale można dodać logikę, która zostanie uruchomiona, gdy dokładność akcelerometru się zmieni
             }
@@ -37,13 +42,28 @@ class MainActivity : AppCompatActivity() {
             override fun onSensorChanged(event: SensorEvent?) {
                 if (event != null) {
                     val currentTime = System.currentTimeMillis()
-                    if (currentTime - lastUpdate > 1000) { // opóźnienie wynoszące 1 sekundę
-                        val x = event.values[0] // wartość akcelerometru wzdłuż osi x
-                        val y = event.values[1] // wartość akcelerometru wzdłuż osi y
-                        val z = event.values[2] // wartość akcelerometru wzdłuż osi z
+                    if (currentTime - lastUpdate > 500) { // opóźnienie wynoszące 0,5 sekundy
+                        xAcc = alpha * xAcc + (1 - alpha) * event.values[0] // wartość akcelerometru wzdłuż osi x
+                        yAcc = alpha * yAcc + (1 - alpha) * event.values[1] // wartość akcelerometru wzdłuż osi y
+                        zAcc = alpha * zAcc + (1 - alpha) * event.values[2] // wartość akcelerometru wzdłuż osi z
 
-                        // dodaj logikę, która będzie wykonywana przy zmianie wartości akcelerometru
-                        textView.setText("x: ${"%.3f".format(x)}, y: ${"%.3f".format(y)}, z: ${"%.3f".format(z)}") // ustawienie wartości w TextView z dokładnością do 3 miejsc po przecinku
+                        val gX = -xAcc / SensorManager.GRAVITY_EARTH
+                        val gY = yAcc / SensorManager.GRAVITY_EARTH
+                        val gZ = zAcc / SensorManager.GRAVITY_EARTH
+
+                        val gForce = Math.sqrt((gX * gX + gY * gY + gZ * gZ).toDouble())
+                        textView.text = "x: ${"%.3f".format(gX)}, y: ${"%.3f".format(gY)}, z: ${"%.3f".format(gZ)}"
+
+                        // Wykrycie czy telefon jest ustawiony poziomo lub pionowo
+                        if (gForce > 1.0) {
+                            if (gZ > gX) {
+                                textView.text = "Orientacja pionowa:\n" +
+                                        "x: ${"%.3f".format(gX)}, y: ${"%.3f".format(gY)}"
+                            } else {
+                                textView.text = "Orientacja pozioma:\n" +
+                                        "y: ${"%.3f".format(gY)}, z: ${"%.3f".format(gZ)}"
+                            }
+                        }
 
                         lastUpdate = currentTime // zapisanie czasu ostatniego pomiaru
                     }
