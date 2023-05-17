@@ -1,36 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:gravity="center"
     android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/obecna" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/poziom"/>
-
-    <TextView
-        android:id="@+id/myText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Witaj świecie!"
-        android:layout_marginBottom="20dp"/>
-
     <Button
-        android:id="@+id/myButton"
+        android:id="@+id/button_pionowo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Kliknij mnie"
-        app:layout_constraintBottom_toTopOf="@+id/myText" />
+        android:text="Przejdź do strony Pionowo" />
+
+    <Button
+        android:id="@+id/button_poziomo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Przejdź do strony Poziomo" />
 
 </LinearLayout>
