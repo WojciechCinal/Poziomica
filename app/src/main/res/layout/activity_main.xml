@@ -3,16 +3,23 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <ImageView
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:src="@drawable/my_app_logo" />
     <Button
         android:id="@+id/button_pionowo"
+        android:layout_marginTop="80dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Przejdź do strony Pionowo" />
+        android:text="Przejdź do pomiarów WERTYKALNYCH" />
 
     <Button
         android:id="@+id/button_poziomo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Przejdź do strony Poziomo" />
+        android:layout_marginTop="20dp"
+        android:text="Przejdź do pomiarów HORYZONTALNYCH" />
 
 </LinearLayout>

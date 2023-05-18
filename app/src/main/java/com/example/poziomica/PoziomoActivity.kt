@@ -67,7 +67,7 @@ class PoziomoActivity : AppCompatActivity(), SensorEventListener {
                 }
 
                 // Zmiana koloru kwadratu oraz tekstu, jeśli jest całkowicie na płaskiej powierzchni
-                val color = if (abs(goraDol) <= 0.16 && abs(lewoPrawo) <= 0.16) Color.GREEN else Color.RED
+                val color = if (abs(goraDol) <= 0.08 && abs(lewoPrawo) <= 0.08) Color.GREEN else Color.RED
                 kwadrat.setBackgroundColor(color)
 
                 kwadrat.text = "góra/dół ${"%.2f".format(goraDol)},\n lewo/prawo ${"%.2f".format(lewoPrawo)}"

@@ -61,7 +61,7 @@ class PionowoActivity: AppCompatActivity(), SensorEventListener {
                 }
 
                 // Zmiana koloru kwadratu oraz tekstu, jeśli jest całkowicie na płaskiej powierzchn
-                val color = if (abs(goraDol) <= 0.16) Color.GREEN else Color.RED
+                val color = if (abs(goraDol) <= 0.08) Color.GREEN else Color.RED
                 kwadrat.setBackgroundColor(color)
 
                 kwadrat.text = "góra/dół ${"%.2f".format(goraDol)}"
@@ -81,7 +81,10 @@ class PionowoActivity: AppCompatActivity(), SensorEventListener {
 
                (x / 10) = (0.14 / 90)
                x = (0.14 / 90) * 10
-               x ≈ 0.1556 ≈ 0.16 jednostek*/
+               x ≈ 0.1556 ≈ 0.16 jednostek
+               wynik dzielę przez 2 bo zakres obliczam dla wartości bezwzględnej z [-10,10],
+               więc zmniejszam zakres o połowę
+               x = 0,08 */
             }
         }
     }
