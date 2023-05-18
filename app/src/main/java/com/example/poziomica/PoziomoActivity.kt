@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import kotlin.math.abs
 
 class PoziomoActivity : AppCompatActivity(), SensorEventListener {
 
@@ -66,10 +67,10 @@ class PoziomoActivity : AppCompatActivity(), SensorEventListener {
                 }
 
                 // Zmiana koloru kwadratu oraz tekstu, jeśli jest całkowicie na płaskiej powierzchni
-                val color = if (goraDol.toInt() == 0 && lewoPrawo.toInt() == 0) Color.GREEN else Color.RED
+                val color = if (abs(goraDol) <= 0.16 && abs(lewoPrawo) <= 0.16) Color.GREEN else Color.RED
                 kwadrat.setBackgroundColor(color)
 
-                kwadrat.text = "góra/dół ${"%.1f".format(goraDol)},\n lewo/prawo ${"%.1f".format(lewoPrawo)}"
+                kwadrat.text = "góra/dół ${"%.2f".format(goraDol)},\n lewo/prawo ${"%.2f".format(lewoPrawo)}"
 
             }
         }
