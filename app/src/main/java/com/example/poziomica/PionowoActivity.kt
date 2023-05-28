@@ -1,21 +1,26 @@
 package com.example.poziomica
 
-import android.graphics.Color
+import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
-import kotlin.math.abs
+import android.os.Vibrator
 
 class PionowoActivity: AppCompatActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private lateinit var kwadrat: TextView
+    private lateinit var info: TextView
+    private lateinit var kolo: ImageView
     private var ostatniPomiar: Long = 0
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +30,8 @@ class PionowoActivity: AppCompatActivity(), SensorEventListener {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         kwadrat = findViewById(R.id.kwadrat_pomiarowy)
+        kolo = findViewById(R.id.kolo_pomiarowe)
+        info = findViewById(R.id.info)
 
         setUpSensorStuff()
     }
@@ -41,54 +48,43 @@ class PionowoActivity: AppCompatActivity(), SensorEventListener {
                 SensorManager.SENSOR_DELAY_NORMAL
             )
         }
+
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
         // Sprawdza, który sensor został wywołany
         if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
-            //Funkcja sprawia, że są 3 pomiary w ciągu 1 sekundy
+            //Funkcja sprawia, że są pomiary co 600 milisekund
             val curTime = System.currentTimeMillis()
-            if (curTime - ostatniPomiar >= 333) {
+            if (curTime - ostatniPomiar >= 600) {
                 ostatniPomiar = curTime
 
-                // goraDol = Przechylenie telefonu w górę(10), płasko (0), do góry nogami (-10)
-                val goraDol = event.values[2]
 
-                // Obracanie i przesuwanie kwadratu na podstawie przechylenia telefonu
-                kwadrat.apply {
-                    rotationX = goraDol * 3f
-                    translationY = goraDol * 10
+                // goraDol = Przechylenie telefonu ekranem w górę (-90), prostopadle do horyzontu (0), ekranem w dół (90)
+                val goraDol = (event.values[2].toDouble() * 9)
+
+                // Przesuwanie koła na podstawie przechylenia telefonu
+                kolo.apply {
+                    translationY = (goraDol * 4).toFloat()
                 }
 
-                // Zmiana koloru kwadratu oraz tekstu, jeśli jest całkowicie na płaskiej powierzchn
-                val color = if (abs(goraDol) <= 0.08) Color.GREEN else Color.RED
-                kwadrat.setBackgroundColor(color)
+                kwadrat.text = "góra/dół ${"%.1f".format(-goraDol)}°"
+                if (goraDol >= -0.8 && goraDol <= 0.8){
+                    info.text = "Płaszczyzna mieści się w normach"
+                    val vibrator: Vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+                    val pattern = longArrayOf(50, 150,50)
+                    // Wywołaj wibrację
+                    vibrator.vibrate(pattern, -1)
+                }else{
+                    info.text = "Płaszczyzna nie jest w normie"
+                }
+                if(goraDol == 0.0){
+                    info.text="Idealnie w poziomie"
+                }
 
-                kwadrat.text = "góra/dół ${"%.2f".format(goraDol)}"
-
-               /*
-               Oblicznie kąta nachylenia mieszczącego się w normach budowlanych:
-               odchylenie od kierunku pionowego ściany nie więcej niż 3 mm na długości 1 m
-
-               Długość pierwszej przyprostokątnej (a): 200 cm
-               Długość drugiej przyprostokątnej (b): 0.5 cm
-
-               Aby obliczyć kąt α:
-               α = arctan(b / a) = arctan(0.5 / 200) ≈ 0.14 stopnia
-
-               10 jednostek --> 90 stopni
-               x jednostek --> 0.14 stopnia
-
-               (x / 10) = (0.14 / 90)
-               x = (0.14 / 90) * 10
-               x ≈ 0.1556 ≈ 0.16 jednostek
-               wynik dzielę przez 2 bo zakres obliczam dla wartości bezwzględnej z [-10,10],
-               więc zmniejszam zakres o połowę
-               x = 0,08 */
             }
         }
     }
-
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         return
