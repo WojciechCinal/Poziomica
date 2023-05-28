@@ -4,22 +4,23 @@
     android:orientation="vertical">
 
     <ImageView
-        android:layout_marginTop="30dp"
         android:layout_width="match_parent"
         android:layout_height="280dp"
+        android:layout_marginTop="15dp"
         android:src="@drawable/my_app_logo" />
+
     <Button
         android:id="@+id/button_pionowo"
-        android:layout_marginTop="80dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="Przejdź do pomiarów WERTYKALNYCH" />
 
     <Button
         android:id="@+id/button_poziomo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="12dp"
         android:text="Przejdź do pomiarów HORYZONTALNYCH" />
 
 </LinearLayout>

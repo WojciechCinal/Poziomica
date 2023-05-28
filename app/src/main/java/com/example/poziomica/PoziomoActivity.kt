@@ -1,21 +1,24 @@
 package com.example.poziomica
 
-import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.Surface
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
-import kotlin.math.abs
 
 class PoziomoActivity : AppCompatActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private lateinit var kwadrat: TextView
+    private lateinit var info: TextView
+    private lateinit var kolo: ImageView
     private var ostatniPomiar: Long = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +28,8 @@ class PoziomoActivity : AppCompatActivity(), SensorEventListener {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         kwadrat = findViewById(R.id.kwadrat_pomiarowy)
+        kolo = findViewById(R.id.kolo_pomiarowe)
+        info = findViewById(R.id.info)
 
         setUpSensorStuff()
     }
@@ -41,6 +46,7 @@ class PoziomoActivity : AppCompatActivity(), SensorEventListener {
                 SensorManager.SENSOR_DELAY_NORMAL
             )
         }
+
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -50,28 +56,56 @@ class PoziomoActivity : AppCompatActivity(), SensorEventListener {
             val curTime = System.currentTimeMillis()
             if (curTime - ostatniPomiar >= 333) {
                 ostatniPomiar = curTime
+                val orientation = windowManager.defaultDisplay.rotation
+                if (orientation == Surface.ROTATION_90 || orientation == Surface.ROTATION_270) {
+                // lewoPrawo = Przechylenie telefonu w lewo(180) i prawo(-180)
+                val lewoPrawo = (event.values[1].toDouble() * 18) + 6.6
 
-                // lewoPrawo = Przechylenie telefonu w lewo(10) i prawo(-10)
-                val lewoPrawo = event.values[0]
-
-                // goraDol = Przechylenie telefonu w górę(10), płasko (0), do góry nogami (-10)
-                val goraDol = event.values[1]
+                // goraDol = Przechylenie telefonu w górę(180), płasko (0), do góry nogami (-180)
+                val goraDol = (event.values[0].toDouble() * 18) + 1.0
 
                 // Obracanie i przesuwanie kwadratu na podstawie przechylenia telefonu
-                kwadrat.apply {
-                    rotationX = goraDol * 3f
-                    rotationY = lewoPrawo * 3f
-                    rotation = -lewoPrawo
-                    translationX = lewoPrawo * -10
-                    translationY = goraDol * 10
+                kolo.apply {
+                    translationX = (lewoPrawo * -2).toFloat()
+                    translationY = (goraDol * 2).toFloat()
                 }
 
-                // Zmiana koloru kwadratu oraz tekstu, jeśli jest całkowicie na płaskiej powierzchni
-                val color = if (abs(goraDol) <= 0.08 && abs(lewoPrawo) <= 0.08) Color.GREEN else Color.RED
-                kwadrat.setBackgroundColor(color)
 
-                kwadrat.text = "góra/dół ${"%.2f".format(goraDol)},\n lewo/prawo ${"%.2f".format(lewoPrawo)}"
+                kwadrat.text = "góra/dół ${"%.1f".format(goraDol)}°,\n lewo/prawo ${"%.1f".format(lewoPrawo)}°"
+                if (goraDol >= -0.8 && goraDol <= 0.8 && lewoPrawo >= -0.8 && lewoPrawo <= 0.8){
+                    info.text = "Płaszczyzna mieści się w normach"
+                }else{
+                    info.text = "Płaszczyzna nie jest w normie"
+                }
+                if(goraDol == 0.0 && lewoPrawo == 0.0){
+                    info.text="Idealnie w poziomie"
+                }
 
+            }else{
+                    // lewoPrawo = Przechylenie telefonu w lewo(180) i prawo(-180)
+                    val lewoPrawo = (event.values[0].toDouble() * 18) + 1.0
+
+                    // goraDol = Przechylenie telefonu w górę(180), płasko (0), do góry nogami (-180)
+                    val goraDol = (event.values[1].toDouble() * 18) + 6.6
+
+                    // Obracanie i przesuwanie kwadratu na podstawie przechylenia telefonu
+                    kolo.apply {
+                        translationX = (lewoPrawo * -2).toFloat()
+                        translationY = (goraDol * 2).toFloat()
+                    }
+
+
+                    kwadrat.text = "góra/dół ${"%.1f".format(goraDol)}°,\n lewo/prawo ${"%.1f".format(lewoPrawo)}°"
+                    if (goraDol >= -0.8 && goraDol <= 0.8 && lewoPrawo >= -0.8 && lewoPrawo <= 0.8){
+                        info.text = "Płaszczyzna mieści się w normach"
+                    }else{
+                        info.text = "Płaszczyzna nie jest w normie"
+                    }
+                    if(goraDol == 0.0 && lewoPrawo == 0.0){
+                        info.text="Idealnie w poziomie"
+                    }
+
+            }
             }
         }
     }
